@@ -8,12 +8,22 @@
 
 /* Begin PBXBuildFile section */
 		30D956A81DD1C07E000B3DC4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D956A71DD1C07E000B3DC4 /* AppDelegate.swift */; };
-		30D956AA1DD1C07E000B3DC4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D956A91DD1C07E000B3DC4 /* ViewController.swift */; };
+		30D956AA1DD1C07E000B3DC4 /* MessagesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D956A91DD1C07E000B3DC4 /* MessagesController.swift */; };
 		30D956AD1DD1C07E000B3DC4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 30D956AB1DD1C07E000B3DC4 /* Main.storyboard */; };
 		30D956AF1DD1C07E000B3DC4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 30D956AE1DD1C07E000B3DC4 /* Assets.xcassets */; };
 		30D956B21DD1C07E000B3DC4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 30D956B01DD1C07E000B3DC4 /* LaunchScreen.storyboard */; };
 		30D956BD1DD1C07E000B3DC4 /* SpatiumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D956BC1DD1C07E000B3DC4 /* SpatiumTests.swift */; };
 		30D956C81DD1C07E000B3DC4 /* SpatiumUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D956C71DD1C07E000B3DC4 /* SpatiumUITests.swift */; };
+		30D956D61DD1DDFB000B3DC4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 30D956D51DD1DDFB000B3DC4 /* GoogleService-Info.plist */; };
+		30D956D91DD1F0DC000B3DC4 /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D956D81DD1F0DC000B3DC4 /* LoginController.swift */; };
+		30D956DB1DD1F1AA000B3DC4 /* ChatLogController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D956DA1DD1F1AA000B3DC4 /* ChatLogController.swift */; };
+		30D956DE1DD1F24E000B3DC4 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D956DD1DD1F24E000B3DC4 /* User.swift */; };
+		30D956E01DD1F274000B3DC4 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D956DF1DD1F274000B3DC4 /* Message.swift */; };
+		30D956E31DD1F298000B3DC4 /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D956E21DD1F298000B3DC4 /* UserCell.swift */; };
+		30D956E51DD1F30A000B3DC4 /* NewMessageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D956E41DD1F30A000B3DC4 /* NewMessageController.swift */; };
+		30D956E71DD1F373000B3DC4 /* LoginController+Handlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D956E61DD1F373000B3DC4 /* LoginController+Handlers.swift */; };
+		30D956EA1DD1F9A0000B3DC4 /* Extentensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D956E91DD1F9A0000B3DC4 /* Extentensions.swift */; };
+		C6AEC0B550A2894DB35134C8 /* libPods-Spatium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA1200B6EF59DFD935A965EF /* libPods-Spatium.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,7 +46,7 @@
 /* Begin PBXFileReference section */
 		30D956A41DD1C07E000B3DC4 /* Spatium.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Spatium.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30D956A71DD1C07E000B3DC4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		30D956A91DD1C07E000B3DC4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		30D956A91DD1C07E000B3DC4 /* MessagesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesController.swift; sourceTree = "<group>"; };
 		30D956AC1DD1C07E000B3DC4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		30D956AE1DD1C07E000B3DC4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		30D956B11DD1C07E000B3DC4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -47,6 +57,18 @@
 		30D956C31DD1C07E000B3DC4 /* SpatiumUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SpatiumUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		30D956C71DD1C07E000B3DC4 /* SpatiumUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatiumUITests.swift; sourceTree = "<group>"; };
 		30D956C91DD1C07E000B3DC4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		30D956D51DD1DDFB000B3DC4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		30D956D81DD1F0DC000B3DC4 /* LoginController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
+		30D956DA1DD1F1AA000B3DC4 /* ChatLogController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatLogController.swift; sourceTree = "<group>"; };
+		30D956DD1DD1F24E000B3DC4 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		30D956DF1DD1F274000B3DC4 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		30D956E21DD1F298000B3DC4 /* UserCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
+		30D956E41DD1F30A000B3DC4 /* NewMessageController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewMessageController.swift; sourceTree = "<group>"; };
+		30D956E61DD1F373000B3DC4 /* LoginController+Handlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LoginController+Handlers.swift"; sourceTree = "<group>"; };
+		30D956E91DD1F9A0000B3DC4 /* Extentensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extentensions.swift; sourceTree = "<group>"; };
+		8ACD393B431251D933563CD2 /* Pods-Spatium.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Spatium.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Spatium/Pods-Spatium.debug.xcconfig"; sourceTree = "<group>"; };
+		A834FCF2BE7FFBC6B6D023E1 /* Pods-Spatium.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Spatium.release.xcconfig"; path = "Pods/Target Support Files/Pods-Spatium/Pods-Spatium.release.xcconfig"; sourceTree = "<group>"; };
+		EA1200B6EF59DFD935A965EF /* libPods-Spatium.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Spatium.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +76,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C6AEC0B550A2894DB35134C8 /* libPods-Spatium.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,6 +104,8 @@
 				30D956BB1DD1C07E000B3DC4 /* SpatiumTests */,
 				30D956C61DD1C07E000B3DC4 /* SpatiumUITests */,
 				30D956A51DD1C07E000B3DC4 /* Products */,
+				AF01497D2FB7FA48A84A7EE9 /* Pods */,
+				74CC773C9F1C87C3A25C7F5C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -97,11 +122,15 @@
 		30D956A61DD1C07E000B3DC4 /* Spatium */ = {
 			isa = PBXGroup;
 			children = (
+				30D956E81DD1F975000B3DC4 /* Helpers */,
+				30D956E11DD1F27F000B3DC4 /* View */,
+				30D956DC1DD1F224000B3DC4 /* Model */,
+				30D956D71DD1F0A3000B3DC4 /* Controller */,
 				30D956A71DD1C07E000B3DC4 /* AppDelegate.swift */,
-				30D956A91DD1C07E000B3DC4 /* ViewController.swift */,
 				30D956AB1DD1C07E000B3DC4 /* Main.storyboard */,
 				30D956AE1DD1C07E000B3DC4 /* Assets.xcassets */,
 				30D956B01DD1C07E000B3DC4 /* LaunchScreen.storyboard */,
+				30D956D51DD1DDFB000B3DC4 /* GoogleService-Info.plist */,
 				30D956B31DD1C07E000B3DC4 /* Info.plist */,
 			);
 			path = Spatium;
@@ -125,6 +154,60 @@
 			path = SpatiumUITests;
 			sourceTree = "<group>";
 		};
+		30D956D71DD1F0A3000B3DC4 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				30D956A91DD1C07E000B3DC4 /* MessagesController.swift */,
+				30D956D81DD1F0DC000B3DC4 /* LoginController.swift */,
+				30D956DA1DD1F1AA000B3DC4 /* ChatLogController.swift */,
+				30D956E41DD1F30A000B3DC4 /* NewMessageController.swift */,
+				30D956E61DD1F373000B3DC4 /* LoginController+Handlers.swift */,
+			);
+			name = Controller;
+			sourceTree = "<group>";
+		};
+		30D956DC1DD1F224000B3DC4 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				30D956DD1DD1F24E000B3DC4 /* User.swift */,
+				30D956DF1DD1F274000B3DC4 /* Message.swift */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		30D956E11DD1F27F000B3DC4 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				30D956E21DD1F298000B3DC4 /* UserCell.swift */,
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
+		30D956E81DD1F975000B3DC4 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				30D956E91DD1F9A0000B3DC4 /* Extentensions.swift */,
+			);
+			name = Helpers;
+			sourceTree = "<group>";
+		};
+		74CC773C9F1C87C3A25C7F5C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				EA1200B6EF59DFD935A965EF /* libPods-Spatium.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AF01497D2FB7FA48A84A7EE9 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				8ACD393B431251D933563CD2 /* Pods-Spatium.debug.xcconfig */,
+				A834FCF2BE7FFBC6B6D023E1 /* Pods-Spatium.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -132,9 +215,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 30D956CC1DD1C07E000B3DC4 /* Build configuration list for PBXNativeTarget "Spatium" */;
 			buildPhases = (
+				58BBD92BC96717BB305D1B24 /* Check Pods Manifest.lock */,
 				30D956A01DD1C07E000B3DC4 /* Sources */,
 				30D956A11DD1C07E000B3DC4 /* Frameworks */,
 				30D956A21DD1C07E000B3DC4 /* Resources */,
+				244DC3B2C128A3C0D735823B /* Embed Pods Frameworks */,
+				C6A0D1DC3A5A2B8893124B95 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -235,6 +321,7 @@
 				30D956B21DD1C07E000B3DC4 /* LaunchScreen.storyboard in Resources */,
 				30D956AF1DD1C07E000B3DC4 /* Assets.xcassets in Resources */,
 				30D956AD1DD1C07E000B3DC4 /* Main.storyboard in Resources */,
+				30D956D61DD1DDFB000B3DC4 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -254,13 +341,69 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		244DC3B2C128A3C0D735823B /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Spatium/Pods-Spatium-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		58BBD92BC96717BB305D1B24 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		C6A0D1DC3A5A2B8893124B95 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Spatium/Pods-Spatium-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		30D956A01DD1C07E000B3DC4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				30D956AA1DD1C07E000B3DC4 /* ViewController.swift in Sources */,
+				30D956E71DD1F373000B3DC4 /* LoginController+Handlers.swift in Sources */,
+				30D956E51DD1F30A000B3DC4 /* NewMessageController.swift in Sources */,
+				30D956DB1DD1F1AA000B3DC4 /* ChatLogController.swift in Sources */,
+				30D956EA1DD1F9A0000B3DC4 /* Extentensions.swift in Sources */,
+				30D956AA1DD1C07E000B3DC4 /* MessagesController.swift in Sources */,
+				30D956D91DD1F0DC000B3DC4 /* LoginController.swift in Sources */,
+				30D956E01DD1F274000B3DC4 /* Message.swift in Sources */,
+				30D956DE1DD1F24E000B3DC4 /* User.swift in Sources */,
 				30D956A81DD1C07E000B3DC4 /* AppDelegate.swift in Sources */,
+				30D956E31DD1F298000B3DC4 /* UserCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -410,6 +553,7 @@
 		};
 		30D956CD1DD1C07E000B3DC4 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8ACD393B431251D933563CD2 /* Pods-Spatium.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = Spatium/Info.plist;
@@ -422,6 +566,7 @@
 		};
 		30D956CE1DD1C07E000B3DC4 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A834FCF2BE7FFBC6B6D023E1 /* Pods-Spatium.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = Spatium/Info.plist;
@@ -505,6 +650,7 @@
 				30D956CE1DD1C07E000B3DC4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		30D956CF1DD1C07E000B3DC4 /* Build configuration list for PBXNativeTarget "SpatiumTests" */ = {
 			isa = XCConfigurationList;
@@ -513,6 +659,7 @@
 				30D956D11DD1C07E000B3DC4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		30D956D21DD1C07E000B3DC4 /* Build configuration list for PBXNativeTarget "SpatiumUITests" */ = {
 			isa = XCConfigurationList;
@@ -521,6 +668,7 @@
 				30D956D41DD1C07E000B3DC4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
