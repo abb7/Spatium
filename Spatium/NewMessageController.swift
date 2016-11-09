@@ -11,7 +11,7 @@ import Firebase
 
 class NewMessageController: UITableViewController {
     
-    let cellId = "cellId"
+    private let cellId = "cellId"
     var users = [User]()
     
     override func viewDidLoad() {
@@ -42,7 +42,7 @@ class NewMessageController: UITableViewController {
                 
             }
             
-            }, withCancel: nil)
+        }, withCancel: nil)
     }
     
     ////////////////////////////////////////////////////////////////

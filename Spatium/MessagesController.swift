@@ -11,7 +11,7 @@ import Firebase
 
 class MessagesController: UITableViewController {
     
-    let cellId = "cellId"
+    private let cellId = "cellId"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,7 +25,7 @@ class MessagesController: UITableViewController {
         
         checkIfUserLoggedIn()
         
-        //tableView.register(UserCell.self, forHeaderFooterViewReuseIdentifier: cellId)
+        tableView.register(UserCell.self, forHeaderFooterViewReuseIdentifier: cellId)
         
         observeMessages()
     }
