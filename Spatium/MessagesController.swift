@@ -26,9 +26,10 @@ class MessagesController: UITableViewController {
         
         checkIfUserLoggedIn()
         
-        //tableView.register(UserCell.self, forHeaderFooterViewReuseIdentifier: cellId)
         
-        observeMessages()
+        self.tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
+        
+        observeMessages()       //to be fixed // it need to be in ViewDidAppear
     }
     
     //An Array of type message that will keep a Number of the messages sent to the user
@@ -67,8 +68,8 @@ class MessagesController: UITableViewController {
     //to set up the data inside each Cell
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cellId")
-        //let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath)
+        //let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cellId")   // this can be used if you want to use the default cell class
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath)
 
         let message = messages[indexPath.row]
         if let toId = message.toId {
@@ -88,6 +89,12 @@ class MessagesController: UITableViewController {
         cell.detailTextLabel?.text = message.text
         
         return cell
+    }
+    
+    ////////////////////////////////////////////////////////////////
+    //return the hight for each row
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 72
     }
     
     ////////////////////////////////////////////////////////////////

@@ -19,7 +19,7 @@ class NewMessageController: UITableViewController {
         super.viewDidLoad()
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(NewMessageController.handleCancel))
         
-        //tableView.register(UserCell.self, forCellReuseIdentifier: cellId)  //to deploy the class "UserClass"
+        self.tableView.register(UserCell.self, forCellReuseIdentifier: cellId)  //to deploy the class "UserClass"
         
         fetchUser()
     }
