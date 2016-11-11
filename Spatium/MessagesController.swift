@@ -67,26 +67,10 @@ class MessagesController: UITableViewController {
     ////////////////////////////////////////////////////////////////
     //to set up the data inside each Cell
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        //let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cellId")   // this can be used if you want to use the default cell class
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! UserCell
 
         let message = messages[indexPath.row]
-        if let toId = message.toId {
-            let ref  = FIRDatabase.database().reference().child("Users").child(toId)
-            ref.observeSingleEvent(of: .value, with: { (snapshot) in
-                
-                if let dictionary = snapshot.value as? [String: AnyObject]
-                {
-                    cell.textLabel?.text = dictionary["name"]as? String
-                }
-                
-                print(snapshot)
-                }, withCancel: nil)
-        }
-        
-        //cell.textLabel?.text = message.toId
-        cell.detailTextLabel?.text = message.text
+        cell.message = message
         
         return cell
     }

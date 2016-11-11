@@ -7,11 +7,38 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseDatabase
 
 ////////////////////////////////////////////////////////////////
 //NEW CLASS WITH USER CELL PROPERTIES OF TYPE UITABLEVIEWCELL
 ////////////////////////////////////////////////////////////////
 class UserCell: UITableViewCell {
+    
+    ////////////////////////////////////////////////////////////////
+    //whenever we set message of this userCell it will apply this commands
+    var message: Message?{
+        didSet{
+            if let toId = message?.toId {
+                let ref  = FIRDatabase.database().reference().child("Users").child(toId)
+                ref.observeSingleEvent(of: .value, with: { (snapshot) in
+                    
+                    if let dictionary = snapshot.value as? [String: AnyObject]
+                    {
+                        self.textLabel?.text = dictionary["name"] as? String
+                        if let profileImageURL = dictionary["profileImageURL"] as? String{
+                            self.profileImageView.loadImageUsingCachWithUrlString(profileImageURL)
+                        }
+                    }
+                    
+                    print(snapshot)
+                    }, withCancel: nil)
+            }
+            
+            detailTextLabel?.text = message?.text
+        }
+        
+    }
 
     ////////////////////////////////////////////////////////////////
     //to modify the text and detail text of the cell
