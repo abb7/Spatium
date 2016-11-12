@@ -48,9 +48,11 @@ class MessagesController: UITableViewController {
                 let message = Message()
                 message.setValuesForKeys(dictionary)
                 //self.messages.append(message)
+                // to set all the messages of the same user in one cell
                 if let toId = message.toId {
                     self.messagesDictionary[toId] = message
                     self.messages = Array(self.messagesDictionary.values)
+                    
                     
                     //to sort the messages by the time in a desending order
                     self.messages.sort(by: { (message1, message2) -> Bool in
