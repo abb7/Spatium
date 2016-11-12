@@ -35,6 +35,8 @@ class MessagesController: UITableViewController {
     //An Array of type message that will keep a Number of the messages sent to the user
     var messages = [Message]()
     
+    var messagesDictionary = [String: Message]()
+    
     
     ////////////////////////////////////////////////////////////////
     //to keep watching new messages and update the user with it
@@ -45,13 +47,21 @@ class MessagesController: UITableViewController {
             if let dictionary = snapshot.value as? [String: AnyObject] {
                 let message = Message()
                 message.setValuesForKeys(dictionary)
-                self.messages.append(message)
+                //self.messages.append(message)
+                if let toId = message.toId {
+                    self.messagesDictionary[toId] = message
+                    self.messages = Array(self.messagesDictionary.values)
+                    
+                    //to sort the messages by the time in a desending order
+                    self.messages.sort(by: { (message1, message2) -> Bool in
+                        return (message1.timeStamp?.intValue)! > (message2.timeStamp?.intValue)!
+                    })
+                }
+                
                 
                 //this will crash because of background thread, so let call this on dispatch_async main thred
                 //self.tableView.reloadData()
-                DispatchQueue.main.async(execute: {
-                    self.tableView.reloadData()
-                })
+                DispatchQueue.main.async(execute: { self.tableView.reloadData() })
             }
             
             
