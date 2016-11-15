@@ -116,6 +116,10 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate {
             let userMessagesRef = FIRDatabase.database().reference().child("User-Messages").child(fromId)
             let messageId = childRef.key
             userMessagesRef.updateChildValues([messageId: 1])
+            
+            //to let the recipient also see the message
+            let recipientUserMessagesRef = FIRDatabase.database().reference().child("User-Messages").child(toId)
+            recipientUserMessagesRef.updateChildValues([messageId: 1])
         }
         
     }

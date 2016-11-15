@@ -30,7 +30,7 @@ class MessagesController: UITableViewController {
         self.tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
         
         //observeMessages()       //to be fixed // it need to be in ViewDidAppear
-        observeUserMessages()
+        //call observeUserMessages() after reloading the data
         
     }
     
@@ -135,6 +135,25 @@ class MessagesController: UITableViewController {
         return 72
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let message = messages[indexPath.row]
+        
+        let chatPartnerId = message.chatPartnerId()
+        
+        let ref = FIRDatabase.database().reference().child("User").child(chatPartnerId)
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            //print(snapshot)
+            guard let dictionary = snapshot.value as? [String: AnyObject]
+                else {
+                  return
+        }
+            let user = User()
+            user.setValuesForKeys(dictionary!)
+            self.showChatControllerForUser(user: user)
+            
+        }, withCancel: nil)
+    }
+    
     ////////////////////////////////////////////////////////////////
     //to check if the user is logged in
     func checkIfUserLoggedIn(){
@@ -169,6 +188,11 @@ class MessagesController: UITableViewController {
     ////////////////////////////////////////////////////////////////
     //to set up the navigation bar title with both the image and the name
     func setupNavBarWithUser(_ user: User){
+        messages.removeAll()
+        messagesDictionary.removeAll()
+        tableView.reloadData()
+        observeUserMessages()
+        
         let titleView = UIView()
         titleView.frame = CGRect(x: 0, y: 0, width: 200, height: 40)
         

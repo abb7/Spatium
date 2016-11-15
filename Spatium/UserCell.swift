@@ -19,21 +19,7 @@ class UserCell: UITableViewCell {
     //whenever we set message of this userCell it will apply this commands
     var message: Message?{
         didSet{
-            if let toId = message?.toId {
-                let ref  = FIRDatabase.database().reference().child("Users").child(toId)
-                ref.observeSingleEvent(of: .value, with: { (snapshot) in
-                    
-                    if let dictionary = snapshot.value as? [String: AnyObject]
-                    {
-                        self.textLabel?.text = dictionary["name"] as? String
-                        if let profileImageURL = dictionary["profileImageURL"] as? String{
-                            self.profileImageView.loadImageUsingCachWithUrlString(profileImageURL)
-                        }
-                    }
-                    
-                    print(snapshot)
-                    }, withCancel: nil)
-            }
+            setupNameAndProfileImage()
             
             detailTextLabel?.text = message?.text
             if let seconds = message?.timeStamp?.doubleValue {
@@ -46,6 +32,26 @@ class UserCell: UITableViewCell {
             
         }
         
+    }
+    
+    private func  setupNameAndProfileImage() {
+        
+        
+        if let id = message?.chatPartnerId(){
+            let ref  = FIRDatabase.database().reference().child("Users").child(id)
+            ref.observeSingleEvent(of: .value, with: { (snapshot) in
+                
+                if let dictionary = snapshot.value as? [String: AnyObject]
+                {
+                    self.textLabel?.text = dictionary["name"] as? String
+                    if let profileImageURL = dictionary["profileImageURL"] as? String{
+                        self.profileImageView.loadImageUsingCachWithUrlString(profileImageURL)
+                    }
+                }
+                
+            print(snapshot)
+            }, withCancel: nil)
+        }
     }
 
     ////////////////////////////////////////////////////////////////
@@ -74,7 +80,7 @@ class UserCell: UITableViewCell {
     //set up time label
     let timeLabel : UILabel = {
        let label = UILabel()
-        label.text = "HH:MM:SS"
+        //label.text = "HH:MM:SS"
         label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = UIColor.lightGray
         label.translatesAutoresizingMaskIntoConstraints = false
