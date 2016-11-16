@@ -140,15 +140,15 @@ class MessagesController: UITableViewController {
         
         let chatPartnerId = message.chatPartnerId()
         
-        let ref = FIRDatabase.database().reference().child("User").child(chatPartnerId)
+        let ref = FIRDatabase.database().reference().child("Users").child(chatPartnerId)
         ref.observeSingleEvent(of: .value, with: { (snapshot) in
-            //print(snapshot)
+            //print(snapshot.value)
             guard let dictionary = snapshot.value as? [String: AnyObject]
                 else {
                   return
         }
             let user = User()
-            user.setValuesForKeys(dictionary!)
+            user.setValuesForKeys(dictionary)
             self.showChatControllerForUser(user: user)
             
         }, withCancel: nil)
