@@ -12,14 +12,48 @@ import FirebaseDatabase
 
 private let reuseIdentifier = "Cell"
 
-class ChatLogController: UICollectionViewController, UITextFieldDelegate {
+class ChatLogController: UICollectionViewController, UITextFieldDelegate, UICollectionViewDelegateFlowLayout {
 
     ////////////////////////////////////////
     //to setup the user that the chat is esablished with
     var user: User? {
         didSet {
             navigationItem.title = user?.name
+            
+            observeMessages()
         }
+    }
+    
+    func observeMessages(){
+        
+        guard let uid = FIRAuth.auth()?.currentUser?.uid else {
+            return
+        }
+        let userMessageRef = FIRDatabase.database().reference().child("User-Messages").child(uid)
+        
+    
+        userMessageRef.observe(.childAdded, with: { (snapshot) in
+            //snapshot would keep the message ID
+            let messageId = snapshot.key
+            let messageRef = FIRDatabase.database().reference().child("Messages").child(messageId)
+            
+            messageRef.observeSingleEvent(of: .value, with: { (snapshot) in
+                
+                guard let dictionary = snapshot.value as? [String: AnyObject] else {
+                    return
+                }
+                
+                let message = Message()
+                //It has a potintional of crashing of the Keys dont match
+                message.setValuesForKeys(dictionary)
+                print(message.text)
+                
+                }, withCancel: nil)
+            
+            
+            }, withCancel: nil)
+        
+        
     }
     
     ////////////////////////////////////////
@@ -45,10 +79,14 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate {
         setupInputComonents()
     }
     
+    ////////////////////////////////////////////////////
+    //set up the number of the Cells in the ChatLog page
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 5
     }
     
+    ////////////////////////////////////////////////////
+    //set up the containt for each Cell
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath)
         cell.backgroundColor = UIColor.blue
@@ -56,6 +94,11 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate {
         return cell
     }
     
+    ////////////////////////////////////////////////////
+    //set up the height and width for each Cell
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: view.frame.height, height: 80)
+    }
     
     
     ////////////////////////////////////////////////////
