@@ -24,6 +24,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         }
     }
     
+    var messages = [Message]()
+    
     func observeMessages(){
         
         guard let uid = FIRAuth.auth()?.currentUser?.uid else {
@@ -46,7 +48,12 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 let message = Message()
                 //It has a potintional of crashing of the Keys dont match
                 message.setValuesForKeys(dictionary)
+                self.messages.append(message)
                 print(message.text)
+                
+                DispatchQueue.main.async {
+                    self.collectionView?.reloadData()
+                }
                 
                 }, withCancel: nil)
             
@@ -82,7 +89,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     ////////////////////////////////////////////////////
     //set up the number of the Cells in the ChatLog page
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        return messages.count
     }
     
     ////////////////////////////////////////////////////
