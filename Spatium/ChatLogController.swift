@@ -112,6 +112,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     //set up the send message bar in the bottom of the new message View
     func setupInputComonents(){
         let containerView = UIView()
+        containerView.backgroundColor = UIColor.white
         containerView.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(containerView)
