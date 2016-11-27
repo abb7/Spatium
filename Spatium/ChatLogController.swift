@@ -48,12 +48,17 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 let message = Message()
                 //It has a potintional of crashing of the Keys dont match
                 message.setValuesForKeys(dictionary)
-                self.messages.append(message)
-                print(message.text)
+                
+                
+                //to filter the messages and show only the messages for the intended user
+                if message.chatPartnerId() == self.user?.id {
+                    self.messages.append(message)
                 
                 DispatchQueue.main.async {
                     self.collectionView?.reloadData()
                 }
+                }
+                
                 
                 }, withCancel: nil)
             
@@ -80,8 +85,9 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        collectionView?.alwaysBounceVertical = true         //to let the page move up/down
         collectionView?.backgroundColor = UIColor.white
-        collectionView?.register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellId)
+        collectionView?.register(ChatMessageCell.self, forCellWithReuseIdentifier: cellId)
         
         setupInputComonents()
     }
@@ -95,8 +101,10 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     ////////////////////////////////////////////////////
     //set up the containt for each Cell
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath)
-        cell.backgroundColor = UIColor.blue
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! ChatMessageCell
+        
+        let message = messages[indexPath.item]
+        cell.textView.text = message.text
         
         return cell
     }
@@ -104,9 +112,28 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     ////////////////////////////////////////////////////
     //set up the height and width for each Cell
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.height, height: 80)
+        
+        var height : CGFloat = 80
+        
+        // get the estimated height some how????
+        if let text = messages[indexPath.item].text {
+            height = estimateFrameForText(text: text).height
+        }
+        
+        
+        return CGSize(width: view.frame.width, height: height)
     }
     
+    ////////////////////////////////////////////////////
+    //to estimate the size of the each message bubble
+    private func estimateFrameForText(text: String) -> CGRect {
+        
+        let size = CGSize(width: 200, height: 1000)
+        let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
+        
+        return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 16)], context: nil)
+        
+    }
     
     ////////////////////////////////////////////////////
     //set up the send message bar in the bottom of the new message View
