@@ -58,8 +58,9 @@ class MessagesController: UITableViewController {
                     let message = Message()
                     message.setValuesForKeys(dictionary)
                     // to set all the messages of the same user in one cell
-                    if let toId = message.toId {
-                        self.messagesDictionary[toId] = message
+                    let chatPartnerId = message.chatPartnerId()
+                    //{
+                        self.messagesDictionary[chatPartnerId] = message
                         self.messages = Array(self.messagesDictionary.values)
                         
                         
@@ -67,7 +68,7 @@ class MessagesController: UITableViewController {
                         self.messages.sort(by: { (message1, message2) -> Bool in
                             return (message1.timeStamp?.intValue)! > (message2.timeStamp?.intValue)!
                         })
-                    }
+                    //}
                     
                     
                     //this will crash because of background thread, so let call this on dispatch_async main thred

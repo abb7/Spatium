@@ -85,6 +85,9 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        collectionView?.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 58, right: 0)
+        collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
+        
         collectionView?.alwaysBounceVertical = true         //to let the page move up/down
         collectionView?.backgroundColor = UIColor.white
         collectionView?.register(ChatMessageCell.self, forCellWithReuseIdentifier: cellId)
@@ -106,7 +109,17 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         let message = messages[indexPath.item]
         cell.textView.text = message.text
         
+        //lets modify the bubbleView's width somehow????
+        cell.bubbleWidthAnchor?.constant = estimateFrameForText(text: message.text!).width + 32
+
+        
         return cell
+    }
+    
+    ////////////////////////////////////////////////////
+    //to fixes the rotation to look good
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        collectionView?.collectionViewLayout.invalidateLayout()
     }
     
     ////////////////////////////////////////////////////
@@ -117,7 +130,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         
         // get the estimated height some how????
         if let text = messages[indexPath.item].text {
-            height = estimateFrameForText(text: text).height
+            height = estimateFrameForText(text: text).height + 20
         }
         
         
@@ -205,6 +218,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 return
             }
             
+            self.inputTextField.text = nil
+            
             let userMessagesRef = FIRDatabase.database().reference().child("User-Messages").child(fromId)
             let messageId = childRef.key
             userMessagesRef.updateChildValues([messageId: 1])
@@ -213,6 +228,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             let recipientUserMessagesRef = FIRDatabase.database().reference().child("User-Messages").child(toId)
             recipientUserMessagesRef.updateChildValues([messageId: 1])
         }
+        
         
     }
     
