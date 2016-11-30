@@ -92,7 +92,74 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         collectionView?.backgroundColor = UIColor.white
         collectionView?.register(ChatMessageCell.self, forCellWithReuseIdentifier: cellId)
         
-        setupInputComonents()
+        //to let the keyboard follow the controller if it go up and down
+        collectionView?.keyboardDismissMode = .interactive
+        
+//        setupInputComonents()
+//        setupKeyboardObservers()
+    }
+    
+    override var inputAccessoryView: UIView?{
+        get {
+            let containerView = UIView ()
+            containerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 50)
+            containerView.backgroundColor = UIColor.lightGray
+            
+            let textField = UITextField()
+            textField.placeholder = "Enter some Text"
+            containerView.addSubview(textField)
+            textField.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 50)
+            return containerView
+        }
+    }
+    
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+    
+    ////////////////////////////////////////
+    //to Observe if the keyboard came up or down
+    func setupKeyboardObservers() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillShow), name: .UIKeyboardWillShow, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillHide), name: .UIKeyboardWillHide, object: nil)
+        
+    }
+    
+    ////////////////////////////////////////
+    //to fix a memory leak where every time you exit chatlog it increase the number to call handleKeyboardWillHide
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self)
+        
+    }
+    
+    ////////////////////////////////////////
+    //the actions that the app takes if the keyboard appear
+    func handleKeyboardWillShow(notification: Notification){
+        let keyboardFrame = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+        let keyboardDuration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? Double
+        
+        //modify the bottomAnchor of the input container to be above the keybored
+        containerViewBottomAnchor?.constant = -keyboardFrame!.height
+        //to let the keyboard appeare
+        UIView.animate(withDuration: keyboardDuration!) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    ////////////////////////////////////////
+    //the actions that the app takes if the keyboard disappear
+    func handleKeyboardWillHide(notification: Notification){
+        containerViewBottomAnchor?.constant = 0
+        
+        let keyboardDuration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? Double
+        //to let the keyboard appeare
+        UIView.animate(withDuration: keyboardDuration!) {
+            self.view.layoutIfNeeded()
+
+    }
     }
     
     ////////////////////////////////////////////////////
@@ -119,13 +186,23 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         return cell
     }
     
+    ////////////////////////////////////////////////////
+    //to set up the bubble features for each side and to put profile Image for the sender
     private func  setupCell(cell: ChatMessageCell, message: Message){
+        
+        if let profileImageURL = self.user?.profileImageURL {
+            cell.profileImageView.loadImageUsingCachWithUrlString(profileImageURL)
+        }
+        
         //to state the color of the message bubble
         if message.fromId == FIRAuth.auth()?.currentUser?.uid {
             //outgoing blue
             cell.bubbleView.backgroundColor = ChatMessageCell.blueColor
             cell.textView.textColor = UIColor.white
             cell.profileImageView.isHidden = true
+            
+            cell.bubbleViewRightAnchor?.isActive = true
+            cell.bubbleViewLeftAnchor?.isActive = false
             
         } else {
             //incoming gray
@@ -170,6 +247,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         
     }
     
+    var containerViewBottomAnchor : NSLayoutConstraint?
+    
     ////////////////////////////////////////////////////
     //set up the send message bar in the bottom of the new message View
     func setupInputComonents(){
@@ -181,7 +260,10 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         
         //x,y, width, height
         containerView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        
+        containerViewBottomAnchor = containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        containerViewBottomAnchor?.isActive = true
+        
         containerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         containerView.heightAnchor.constraint(equalToConstant: 50).isActive = true
         

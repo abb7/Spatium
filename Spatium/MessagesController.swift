@@ -26,11 +26,7 @@ class MessagesController: UITableViewController {
         
         checkIfUserLoggedIn()
         
-        
         self.tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
-        
-        //observeMessages()       //to be fixed // it need to be in ViewDidAppear
-        //call observeUserMessages() after reloading the data
         
     }
     
@@ -39,6 +35,7 @@ class MessagesController: UITableViewController {
     
     var messagesDictionary = [String: Message]()
     
+    var timer: Timer?
     
     
     func observeUserMessages(){
@@ -71,9 +68,10 @@ class MessagesController: UITableViewController {
                     //}
                     
                     
-                    //this will crash because of background thread, so let call this on dispatch_async main thred
-                    //self.tableView.reloadData()
-                    DispatchQueue.main.async(execute: { self.tableView.reloadData() })
+                    //we need to reduce the number of reload thats way we use this way to reload the table
+                    self.timer?.invalidate()
+                    //to reload the tableView #to fix the bug where the images come wrong sometimes
+                    self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
                 }
                 
                 
@@ -81,37 +79,17 @@ class MessagesController: UITableViewController {
             
             }, withCancel: nil)
     }
+
     
     ////////////////////////////////////////////////////////////////
-    //to keep watching new messages and update the user with it
-    func observeMessages(){
-        let ref = FIRDatabase.database().reference().child("Messages")
-        ref.observe(.childAdded, with: { (snapshot) in
-            
-            if let dictionary = snapshot.value as? [String: AnyObject] {
-                let message = Message()
-                message.setValuesForKeys(dictionary)
-                // to set all the messages of the same user in one cell
-                if let toId = message.toId {
-                    self.messagesDictionary[toId] = message
-                    self.messages = Array(self.messagesDictionary.values)
-                    
-                    
-                    //to sort the messages by the time in a desending order
-                    self.messages.sort(by: { (message1, message2) -> Bool in
-                        return (message1.timeStamp?.intValue)! > (message2.timeStamp?.intValue)!
-                    })
-                }
-                
-                
-                //this will crash because of background thread, so let call this on dispatch_async main thred
-                //self.tableView.reloadData()
-                DispatchQueue.main.async(execute: { self.tableView.reloadData() })
-            }
-            
-            
-            }, withCancel: nil)
+    //to reload the message controller
+    func handleReloadTable(){
+        
+        DispatchQueue.main.async(execute: {
+            self.tableView.reloadData()
+        })
     }
+    
     
     ////////////////////////////////////////////////////////////////
     //to state the number of Rows
