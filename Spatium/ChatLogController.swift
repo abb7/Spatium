@@ -85,8 +85,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        collectionView?.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 58, right: 0)
-        collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
+        collectionView?.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+//        collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
         
         collectionView?.alwaysBounceVertical = true         //to let the page move up/down
         collectionView?.backgroundColor = UIColor.white
@@ -99,20 +99,60 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
 //        setupKeyboardObservers()
     }
     
+    ////////////////////////////////////////
+    //to set up the inputContainerView for the text to be sent and to include it inside the inputAccessoryView
+    //inputTextField would be outside it to be able to type on it
+    lazy var inputContainerView : UIView  = {
+        let containerView = UIView ()
+        containerView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 50)
+        containerView.backgroundColor = UIColor.white
+        
+        //set up the send button
+        let sendButton = UIButton(type: .system)
+        sendButton.setTitle("Send", for: .normal)
+        sendButton.addTarget(self, action: #selector(handleSend), for: .touchUpInside)
+        sendButton.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(sendButton)
+        
+        //x,y,h,w
+        sendButton.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
+        sendButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
+        sendButton.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
+        sendButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        
+        containerView.addSubview(self.inputTextField)
+        
+        //x,y,h,w
+        self.inputTextField.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 8).isActive = true
+        self.inputTextField.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
+        self.inputTextField.rightAnchor.constraint(equalTo: sendButton.leftAnchor).isActive = true
+        self.inputTextField.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
+        
+        let separatorLineView = UIView()
+        separatorLineView.backgroundColor = UIColor(r: 220, g: 220, b: 220)
+        separatorLineView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(separatorLineView)
+        
+        //x,y,h,w
+        separatorLineView.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
+        separatorLineView.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
+        separatorLineView.widthAnchor.constraint(equalTo: containerView.widthAnchor).isActive = true
+        separatorLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+
+        return containerView
+    }()
+    
+    
+    ////////////////////////////////////////
+    //attach the textField with the keyboard to show the keyboard whenever u press on it and to help drag it down when you swap down
     override var inputAccessoryView: UIView?{
         get {
-            let containerView = UIView ()
-            containerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 50)
-            containerView.backgroundColor = UIColor.lightGray
-            
-            let textField = UITextField()
-            textField.placeholder = "Enter some Text"
-            containerView.addSubview(textField)
-            textField.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 50)
-            return containerView
+            return inputContainerView
         }
     }
     
+    ////////////////////////////////////////
+    //to be able to see the inputAccessoryView
     override var canBecomeFirstResponder: Bool {
         return true
     }
@@ -231,9 +271,11 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         if let text = messages[indexPath.item].text {
             height = estimateFrameForText(text: text).height + 20
         }
+        //add width to fix the issue of resizeing after fliping the screen
+        let width = UIScreen.main.bounds.width
         
         
-        return CGSize(width: view.frame.width, height: height)
+        return CGSize(width: width, height: height)
     }
     
     ////////////////////////////////////////////////////
