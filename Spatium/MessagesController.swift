@@ -47,43 +47,53 @@ class MessagesController: UITableViewController {
         
         ref.observe(.childAdded, with: { (snapshot) in
 
-            let messageId = snapshot.key
-            let messageReference = FIRDatabase.database().reference().child("Messages").child(messageId)
-            messageReference.observeSingleEvent(of: .value, with: { (snapshot) in
-                ///// copy from the old class observeMessages
-                if let dictionary = snapshot.value as? [String: AnyObject] {
-                    let message = Message()
-                    message.setValuesForKeys(dictionary)
-                    // to set all the messages of the same user in one cell
-                    let chatPartnerId = message.chatPartnerId()
-                    //{
-                        self.messagesDictionary[chatPartnerId] = message
-                        self.messages = Array(self.messagesDictionary.values)
-                        
-                        
-                        //to sort the messages by the time in a desending order
-                        self.messages.sort(by: { (message1, message2) -> Bool in
-                            return (message1.timeStamp?.intValue)! > (message2.timeStamp?.intValue)!
-                        })
-                    //}
-                    
-                    
-                    //we need to reduce the number of reload thats way we use this way to reload the table
-                    self.timer?.invalidate()
-                    //to reload the tableView #to fix the bug where the images come wrong sometimes
-                    self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
-                }
+            let userId = snapshot.key
+            
+            FIRDatabase.database().reference().child("User-Messages").child(uid).child(userId).observe(.childAdded, with: { (snapshot) in
                 
+                let  messageId = snapshot.key
+                //to orgnize our code we took part of the code and set it up in a private function
+                self.fetchMessageWithMessageId(messageId: messageId)
                 
                 }, withCancel: nil)
-            
+            return
             }, withCancel: nil)
     }
-
+    
+    private func  fetchMessageWithMessageId(messageId: String) {
+        let messageReference = FIRDatabase.database().reference().child("Messages").child(messageId)
+        messageReference.observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            if let dictionary = snapshot.value as? [String: AnyObject] {
+                let message = Message()
+                message.setValuesForKeys(dictionary)
+                // to set all the messages of the same user in one cell
+                let chatPartnerId = message.chatPartnerId()
+                
+                self.messagesDictionary[chatPartnerId] = message
+                self.attemptReloadOfTable ()
+                
+            }
+            }, withCancel: nil)
+    }
     
     ////////////////////////////////////////////////////////////////
-    //to reload the message controller
+    //to setup the reloade method 
+    private func attemptReloadOfTable (){
+        //we need to reduce the number of reload thats way we use this way to reload the table
+        self.timer?.invalidate()
+        //to reload the tableView #to fix the bug where the images come wrong sometimes
+        self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
+    }
+    
+    ////////////////////////////////////////////////////////////////
+    //to reload the message controller + resort the the messages dictionary // to minnimize the amount of sorting and enhance the performance
     func handleReloadTable(){
+        self.messages = Array(self.messagesDictionary.values)
+        //to sort the messages by the time in a desending order
+        self.messages.sort(by: { (message1, message2) -> Bool in
+            return (message1.timeStamp?.intValue)! > (message2.timeStamp?.intValue)!
+        })
         
         DispatchQueue.main.async(execute: {
             self.tableView.reloadData()
@@ -121,7 +131,7 @@ class MessagesController: UITableViewController {
         
         let ref = FIRDatabase.database().reference().child("Users").child(chatPartnerId)
         ref.observeSingleEvent(of: .value, with: { (snapshot) in
-            //print(snapshot.value)
+            
             guard let dictionary = snapshot.value as? [String: AnyObject]
                 else {
                   return
@@ -152,7 +162,7 @@ class MessagesController: UITableViewController {
             return
         }
         FIRDatabase.database().reference().child("Users").child(uid).observeSingleEvent(of: .value, with: { (snapshot) -> Void in
-            //print(snapshot)
+
             if let dictionary = snapshot.value as? [String: AnyObject]{
                 
                 let user = User()

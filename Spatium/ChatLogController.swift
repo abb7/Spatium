@@ -28,10 +28,10 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     
     func observeMessages(){
         
-        guard let uid = FIRAuth.auth()?.currentUser?.uid else {
+        guard let uid = FIRAuth.auth()?.currentUser?.uid , let toId = user?.id else {
             return
         }
-        let userMessageRef = FIRDatabase.database().reference().child("User-Messages").child(uid)
+        let userMessageRef = FIRDatabase.database().reference().child("User-Messages").child(uid).child(toId)
         
     
         userMessageRef.observe(.childAdded, with: { (snapshot) in
@@ -41,7 +41,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             
             messageRef.observeSingleEvent(of: .value, with: { (snapshot) in
                 
-                guard let dictionary = snapshot.value as? [String: AnyObject] else {
+                guard let dictionary = snapshot.value as? [String: AnyObject] else
+                {
                     return
                 }
                 
@@ -51,14 +52,14 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 
                 
                 //to filter the messages and show only the messages for the intended user
-                if message.chatPartnerId() == self.user?.id {
-                    self.messages.append(message)
+                //we fix this by interducing a sub child inside the uid
                 
-                DispatchQueue.main.async {
-                    self.collectionView?.reloadData()
-                }
-                }
+                self.messages.append(message)
                 
+                DispatchQueue.main.async
+                    {
+                        self.collectionView?.reloadData()
+                }
                 
                 }, withCancel: nil)
             
@@ -291,7 +292,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     
     var containerViewBottomAnchor : NSLayoutConstraint?
     
-    ////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////   no use of this method any more
     //set up the send message bar in the bottom of the new message View
     func setupInputComonents(){
         let containerView = UIView()
@@ -366,12 +367,12 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             
             self.inputTextField.text = nil
             
-            let userMessagesRef = FIRDatabase.database().reference().child("User-Messages").child(fromId)
+            let userMessagesRef = FIRDatabase.database().reference().child("User-Messages").child(fromId).child(toId)
             let messageId = childRef.key
             userMessagesRef.updateChildValues([messageId: 1])
             
             //to let the recipient also see the message
-            let recipientUserMessagesRef = FIRDatabase.database().reference().child("User-Messages").child(toId)
+            let recipientUserMessagesRef = FIRDatabase.database().reference().child("User-Messages").child(toId).child(fromId)
             recipientUserMessagesRef.updateChildValues([messageId: 1])
         }
         
