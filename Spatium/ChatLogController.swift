@@ -12,7 +12,7 @@ import FirebaseDatabase
 
 private let reuseIdentifier = "Cell"
 
-class ChatLogController: UICollectionViewController, UITextFieldDelegate, UICollectionViewDelegateFlowLayout {
+class ChatLogController: UICollectionViewController, UITextFieldDelegate, UICollectionViewDelegateFlowLayout, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     ////////////////////////////////////////
     //to setup the user that the chat is esablished with
@@ -96,7 +96,6 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         //to let the keyboard follow the controller if it go up and down
         collectionView?.keyboardDismissMode = .interactive
         
-//        setupInputComonents()
 //        setupKeyboardObservers()
     }
     
@@ -121,10 +120,27 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         sendButton.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
         sendButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
         
+        //set up the image to upload an image
+        let uploadImageView = UIImageView()
+        uploadImageView.image = UIImage(named: "upload-image")
+        containerView.addSubview(uploadImageView)
+        //uploadImageView.contentMode = .scaleAspectFit
+        uploadImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        uploadImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(ChatLogController.handleUploadTap)))
+        uploadImageView.isUserInteractionEnabled = true
+        
+        //x,y,h,w
+        uploadImageView.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
+        uploadImageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
+        uploadImageView.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        uploadImageView.widthAnchor.constraint(equalToConstant: 44).isActive = true
+
+        
         containerView.addSubview(self.inputTextField)
         
         //x,y,h,w
-        self.inputTextField.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 8).isActive = true
+        self.inputTextField.leftAnchor.constraint(equalTo: uploadImageView.rightAnchor).isActive = true
         self.inputTextField.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
         self.inputTextField.rightAnchor.constraint(equalTo: sendButton.leftAnchor).isActive = true
         self.inputTextField.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
@@ -143,6 +159,64 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         return containerView
     }()
     
+    func handleUploadTap(){
+        let picker = UIImagePickerController()
+        picker.delegate = self      //add 2 more libraries
+        
+        //to let the user to be able to EDIT the Image
+        picker.allowsEditing = true
+        present(picker, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        
+        var selectedImageFromPicker: UIImage?
+        
+        
+        //if edited
+        if let editedImage = info["UIImagePickerControllerEditedImage"] as? UIImage {
+            selectedImageFromPicker = editedImage
+            
+        }
+            //if not edited
+        else if let originalImage = info["UIImagePickerControllerOriginalImage"] as? UIImage {
+            
+            selectedImageFromPicker = originalImage
+            
+        }
+        
+        if let selectedImage = selectedImageFromPicker{
+                uploadToFirebaseStorageUsingImage(image: selectedImage)
+        }
+        
+        dismiss(animated: true, completion: nil)
+
+        
+    }
+    
+    private func uploadToFirebaseStorageUsingImage(image: UIImage){
+        let imageName = NSUUID().uuidString
+        let ref = FIRStorage.storage().reference().child("Message-Images").child(imageName)
+        
+        if let uploadData = UIImageJPEGRepresentation(image, 0.2){
+            ref.put(uploadData, metadata: nil, completion: { (metadata, error) in
+                if error != nil {
+                    print("failed to upload the Image")
+                    return
+                }
+                
+                if let imageUrl = metadata.downloadURL()?.absoluteString {
+                    
+                }
+                
+                
+            })
+        }
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
+    }
     
     ////////////////////////////////////////
     //attach the textField with the keyboard to show the keyboard whenever u press on it and to help drag it down when you swap down
@@ -292,58 +366,6 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     
     var containerViewBottomAnchor : NSLayoutConstraint?
     
-    ////////////////////////////////////////////////////   no use of this method any more
-    //set up the send message bar in the bottom of the new message View
-    func setupInputComonents(){
-        let containerView = UIView()
-        containerView.backgroundColor = UIColor.white
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(containerView)
-        
-        //x,y, width, height
-        containerView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        
-        containerViewBottomAnchor = containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        containerViewBottomAnchor?.isActive = true
-        
-        containerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        containerView.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        
-        //set up the send button
-        let sendButton = UIButton(type: .system)
-        sendButton.setTitle("Send", for: .normal)
-        sendButton.addTarget(self, action: #selector(handleSend), for: .touchUpInside)
-        sendButton.translatesAutoresizingMaskIntoConstraints = false
-        containerView.addSubview(sendButton)
-        
-        //x,y,h,w
-        sendButton.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
-        sendButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
-        sendButton.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
-        sendButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        
-        containerView.addSubview(inputTextField)
-        
-        //x,y,h,w
-        inputTextField.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 8).isActive = true
-        inputTextField.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
-        inputTextField.rightAnchor.constraint(equalTo: sendButton.leftAnchor).isActive = true
-        inputTextField.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
-        
-        let separatorLineView = UIView()
-        separatorLineView.backgroundColor = UIColor(r: 220, g: 220, b: 220)
-        separatorLineView.translatesAutoresizingMaskIntoConstraints = false
-        containerView.addSubview(separatorLineView)
-        
-        //x,y,h,w
-        separatorLineView.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
-        separatorLineView.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
-        separatorLineView.widthAnchor.constraint(equalTo: containerView.widthAnchor).isActive = true
-        separatorLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
-        
-        
-    }
     
     ////////////////////////////////////////
     //to update the "messages" node in the Database and add the new message and user name
