@@ -205,12 +205,41 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                     return
                 }
                 
-                if let imageUrl = metadata.downloadURL()?.absoluteString {
+                if let imageUrl = metadata?.downloadURL()?.absoluteString {
+                    
+                    self.sendMessageWithImageUrl(imageUrl: imageUrl)
                     
                 }
                 
                 
             })
+        }
+    }
+    
+    private func sendMessageWithImageUrl(imageUrl: String){
+        let ref = FIRDatabase.database().reference().child("Messages")
+        let childRef = ref.childByAutoId()
+        let toId = user!.id!
+        let fromId = FIRAuth.auth()!.currentUser!.uid
+        let timeStamp = (Int(NSDate().timeIntervalSince1970)) as NSNumber
+        let values = ["imageUrl": imageUrl, "toId": toId, "fromId": fromId, "timeStamp": timeStamp] as [String : Any]
+        
+        
+        childRef.updateChildValues(values) { (error, ref) in
+            if error != nil {
+                print(error)
+                return
+            }
+            
+            self.inputTextField.text = nil
+            
+            let userMessagesRef = FIRDatabase.database().reference().child("User-Messages").child(fromId).child(toId)
+            let messageId = childRef.key
+            userMessagesRef.updateChildValues([messageId: 1])
+            
+            //to let the recipient also see the message
+            let recipientUserMessagesRef = FIRDatabase.database().reference().child("User-Messages").child(toId).child(fromId)
+            recipientUserMessagesRef.updateChildValues([messageId: 1])
         }
     }
     
@@ -294,8 +323,10 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         //call the private function to modify the cell and the bubble
         setupCell(cell: cell, message: message)
         
-        //lets modify the bubbleView's width somehow????
-        cell.bubbleWidthAnchor?.constant = estimateFrameForText(text: message.text!).width + 32
+        if let text = message.text {
+            cell.bubbleWidthAnchor?.constant = estimateFrameForText(text: text).width + 32
+        
+        }
 
         
         return cell
@@ -307,6 +338,14 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         
         if let profileImageURL = self.user?.profileImageURL {
             cell.profileImageView.loadImageUsingCachWithUrlString(profileImageURL)
+        }
+        
+        if let messageImageUrl = message.imageUrl {
+            cell.messageImageView.loadImageUsingCachWithUrlString(messageImageUrl)
+            cell.messageImageView.isHidden = false
+            cell.bubbleView.backgroundColor = UIColor.clear
+        } else {
+            cell.messageImageView.isHidden = true
         }
         
         //to state the color of the message bubble
@@ -327,6 +366,14 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             
             cell.bubbleViewRightAnchor?.isActive = false
             cell.bubbleViewLeftAnchor?.isActive = true
+        }
+        
+        if let messageImageUrl = message.imageUrl {
+            cell.messageImageView.loadImageUsingCachWithUrlString(messageImageUrl)
+            cell.messageImageView.isHidden = false
+            cell.bubbleView.backgroundColor = UIColor.clear
+        } else {
+            cell.messageImageView.isHidden = true
         }
     }
     
@@ -372,15 +419,13 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     func handleSend(){
         
         let ref = FIRDatabase.database().reference().child("Messages")
-        let childRef = ref.childByAutoId()          //this will allow creating different ID for each message
-        //is it the best thing to include the name  iside the message node
+        let childRef = ref.childByAutoId()
         let toId = user!.id!
         let fromId = FIRAuth.auth()!.currentUser!.uid
         let timeStamp = (Int(NSDate().timeIntervalSince1970)) as NSNumber
         let values = ["text": inputTextField.text!, "toId": toId, "fromId": fromId, "timeStamp": timeStamp] as [String : Any]
-        //childRef.updateChildValues(values)
         
-        //add user messages child and keep a refrencing id for each user...
+
         childRef.updateChildValues(values) { (error, ref) in
             if error != nil {
                 print(error)
