@@ -46,15 +46,15 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                     return
                 }
                 
-                let message = Message()
+                //let message = Message(dictionary: dictionary)
                 //It has a potintional of crashing of the Keys dont match
-                message.setValuesForKeys(dictionary)
+                //message.setValuesForKeys(dictionary)
                 
                 
                 //to filter the messages and show only the messages for the intended user
                 //we fix this by interducing a sub child inside the uid
                 
-                self.messages.append(message)
+                self.messages.append(Message(dictionary: dictionary))
                 
                 DispatchQueue.main.async
                     {
@@ -195,6 +195,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     }
     
     private func uploadToFirebaseStorageUsingImage(image: UIImage){
+        
         let imageName = NSUUID().uuidString
         let ref = FIRStorage.storage().reference().child("Message-Images").child(imageName)
         
@@ -207,7 +208,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 
                 if let imageUrl = metadata?.downloadURL()?.absoluteString {
                     
-                    self.sendMessageWithImageUrl(imageUrl: imageUrl)
+                    self.sendMessageWithImageUrl(imageUrl: imageUrl,image: image)
                     
                 }
                 
@@ -216,32 +217,6 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         }
     }
     
-    private func sendMessageWithImageUrl(imageUrl: String){
-        let ref = FIRDatabase.database().reference().child("Messages")
-        let childRef = ref.childByAutoId()
-        let toId = user!.id!
-        let fromId = FIRAuth.auth()!.currentUser!.uid
-        let timeStamp = (Int(NSDate().timeIntervalSince1970)) as NSNumber
-        let values = ["imageUrl": imageUrl, "toId": toId, "fromId": fromId, "timeStamp": timeStamp] as [String : Any]
-        
-        
-        childRef.updateChildValues(values) { (error, ref) in
-            if error != nil {
-                print(error)
-                return
-            }
-            
-            self.inputTextField.text = nil
-            
-            let userMessagesRef = FIRDatabase.database().reference().child("User-Messages").child(fromId).child(toId)
-            let messageId = childRef.key
-            userMessagesRef.updateChildValues([messageId: 1])
-            
-            //to let the recipient also see the message
-            let recipientUserMessagesRef = FIRDatabase.database().reference().child("User-Messages").child(toId).child(fromId)
-            recipientUserMessagesRef.updateChildValues([messageId: 1])
-        }
-    }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
@@ -326,6 +301,9 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         if let text = message.text {
             cell.bubbleWidthAnchor?.constant = estimateFrameForText(text: text).width + 32
         
+        } else if message.imageUrl != nil {
+            // fall in here if its an image message
+            cell.bubbleWidthAnchor?.constant = 200
         }
 
         
@@ -389,10 +367,16 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         
         var height : CGFloat = 80
         
-        // get the estimated height some how????
-        if let text = messages[indexPath.item].text {
+        let message = messages[indexPath.item]
+        if let text = message.text {
             height = estimateFrameForText(text: text).height + 20
+        } else if let imageWidth = message.imageWidth?.floatValue, let imageHeight = message.imageHeight?.floatValue {
+            //(height 1 / width 1) = (height 2 / width 2)
+            //solve for height 1
+            // height 1 = ( height 2 / ( width 2 * width 1 ))
+            height = CGFloat(imageHeight / imageWidth * 200)
         }
+        
         //add width to fix the issue of resizeing after fliping the screen
         let width = UIScreen.main.bounds.width
         
@@ -418,14 +402,31 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     //to update the "messages" node in the Database and add the new message and user name
     func handleSend(){
         
+        let properties : [String: AnyObject] = ["text": inputTextField.text! as AnyObject]
+        sendMessageWithProperties(properties: properties)
+        
+    }
+    
+    private func sendMessageWithImageUrl(imageUrl: String, image: UIImage){
+        
+        let properties : [String: AnyObject] = ["imageUrl": imageUrl as AnyObject, "imageWidth": image.size.width as AnyObject,"imageHeight": image.size.height as AnyObject]
+        sendMessageWithProperties(properties: properties)
+        
+        
+    }
+
+    private func sendMessageWithProperties(properties: [String: AnyObject]){
         let ref = FIRDatabase.database().reference().child("Messages")
         let childRef = ref.childByAutoId()
         let toId = user!.id!
         let fromId = FIRAuth.auth()!.currentUser!.uid
         let timeStamp = (Int(NSDate().timeIntervalSince1970)) as NSNumber
-        let values = ["text": inputTextField.text!, "toId": toId, "fromId": fromId, "timeStamp": timeStamp] as [String : Any]
+        var values: [String : Any] = ["toId": toId, "fromId": fromId, "timeStamp": timeStamp]
         
-
+        //appennd properties dictionary onto values somehow???
+        //key $0 and value$1
+        properties.forEach({values [$0] = $1})
+        
         childRef.updateChildValues(values) { (error, ref) in
             if error != nil {
                 print(error)
@@ -442,8 +443,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             let recipientUserMessagesRef = FIRDatabase.database().reference().child("User-Messages").child(toId).child(fromId)
             recipientUserMessagesRef.updateChildValues([messageId: 1])
         }
-        
-        
+
     }
     
     ////////////////////////////////////////

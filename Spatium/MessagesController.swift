@@ -65,8 +65,7 @@ class MessagesController: UITableViewController {
         messageReference.observeSingleEvent(of: .value, with: { (snapshot) in
             
             if let dictionary = snapshot.value as? [String: AnyObject] {
-                let message = Message()
-                message.setValuesForKeys(dictionary)
+                let message = Message(dictionary: dictionary)
                 // to set all the messages of the same user in one cell
                 let chatPartnerId = message.chatPartnerId()
                 

@@ -15,6 +15,8 @@ class Message: NSObject {
     var timeStamp: NSNumber?
     var text: String?
     var imageUrl: String?
+    var imageWidth: NSNumber?
+    var imageHeight: NSNumber?
     
     func chatPartnerId() -> String {
         
@@ -23,6 +25,19 @@ class Message: NSObject {
         } else {
             return (fromId)!
         }
+    }
+    
+    //to prevent the app from crashing every time we interduce a new property
+    init(dictionary:  [String: AnyObject]) {
+        super.init()
+        fromId = dictionary ["fromId"] as? String
+        toId = dictionary ["toId"] as? String
+        timeStamp = dictionary ["timeStamp"] as? NSNumber
+        text = dictionary ["text"] as? String
+        imageUrl = dictionary ["imageUrl"] as? String
+        imageWidth = dictionary ["imageWidth"] as? NSNumber
+        imageHeight = dictionary ["imageHeight"] as? NSNumber
+        
     }
     
 }
