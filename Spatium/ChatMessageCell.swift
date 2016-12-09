@@ -17,6 +17,8 @@ class ChatMessageCell: UICollectionViewCell {
         tv.backgroundColor = UIColor.clear
         tv.textColor = UIColor.white
         
+        //to disable the editing on each bubble
+        tv.isEditable = false
         tv.translatesAutoresizingMaskIntoConstraints = false
         return tv
     }()

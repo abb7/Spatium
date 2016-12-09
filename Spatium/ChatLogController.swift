@@ -55,10 +55,15 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 //we fix this by interducing a sub child inside the uid
                 
                 self.messages.append(Message(dictionary: dictionary))
-                
-                DispatchQueue.main.async
-                    {
-                        self.collectionView?.reloadData()
+                DispatchQueue.main.async {
+                    self.collectionView?.reloadData()
+                    
+                    //scroll to the last index
+                    if self.messages.count > 1 {
+                        let indexPath = IndexPath(item: self.messages.count - 1, section: 0)
+                        self.collectionView?.scrollToItem(at: indexPath , at: .bottom, animated: true)
+                    }
+                    
                 }
                 
                 }, withCancel: nil)
@@ -96,7 +101,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         //to let the keyboard follow the controller if it go up and down
         collectionView?.keyboardDismissMode = .interactive
         
-//        setupKeyboardObservers()
+        setupKeyboardObservers()
     }
     
     ////////////////////////////////////////
@@ -239,10 +244,19 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     ////////////////////////////////////////
     //to Observe if the keyboard came up or down
     func setupKeyboardObservers() {
-        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillShow), name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboradDidShow), name: .UIKeyboardDidShow, object: nil)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillHide), name: .UIKeyboardWillHide, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillShow), name: .UIKeyboardWillShow, object: nil)
+//        
+//        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillHide), name: .UIKeyboardWillHide, object: nil)
         
+    }
+    
+    func handleKeyboradDidShow(){
+        if messages.count > 0 {
+            let indexPath = IndexPath(item: messages.count - 1, section: 0)
+            collectionView?.scrollToItem(at: indexPath, at: .top, animated: true)
+        }
     }
     
     ////////////////////////////////////////
