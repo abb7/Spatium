@@ -41,8 +41,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             
             messageRef.observeSingleEvent(of: .value, with: { (snapshot) in
                 
-                guard let dictionary = snapshot.value as? [String: AnyObject] else
-                {
+                guard let dictionary = snapshot.value as? [String: AnyObject]
+                    else {
                     return
                 }
                 
@@ -55,18 +55,24 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 //we fix this by interducing a sub child inside the uid
                 
                 self.messages.append(Message(dictionary: dictionary))
+                
                 DispatchQueue.main.async {
                     self.collectionView?.reloadData()
                     
                     //scroll to the last index
-                    if self.messages.count > 1 {
+                    ////////////////////////////////////////
+                    //a potential of failur ever time we open new chat not on memory
+                    //if self.messages.count > 1 {
+                        //print (self.messages.count)
                         let indexPath = IndexPath(item: self.messages.count - 1, section: 0)
                         self.collectionView?.scrollToItem(at: indexPath , at: .bottom, animated: true)
-                    }
+                    //}
                     
                 }
                 
                 }, withCancel: nil)
+            
+            
             
             
             }, withCancel: nil)
@@ -306,6 +312,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! ChatMessageCell
         
+        cell.chatLogController = self
+        
         let message = messages[indexPath.item]
         cell.textView.text = message.text
         
@@ -313,16 +321,24 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         setupCell(cell: cell, message: message)
         
         if let text = message.text {
+            //this is a Text Message
             cell.bubbleWidthAnchor?.constant = estimateFrameForText(text: text).width + 32
-        
+            cell.textView.isHidden = false
         } else if message.imageUrl != nil {
-            // fall in here if its an image message
+            //this an image message
             cell.bubbleWidthAnchor?.constant = 200
+            cell.textView.isHidden = true
+
+//            cell.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleImageTapping)))
         }
 
         
         return cell
     }
+    
+//    func handleImageTapping(){
+//        print("Image has been tapped")
+//    }
     
     ////////////////////////////////////////////////////
     //to set up the bubble features for each side and to put profile Image for the sender
@@ -438,7 +454,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         var values: [String : Any] = ["toId": toId, "fromId": fromId, "timeStamp": timeStamp]
         
         //appennd properties dictionary onto values somehow???
-        //key $0 and value$1
+        //key $0 and value $1
         properties.forEach({values [$0] = $1})
         
         childRef.updateChildValues(values) { (error, ref) in
@@ -465,5 +481,62 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         handleSend()
         return true
+    }
+    
+    var startingFrame: CGRect?
+    var blackBackgroundView: UIView?
+    
+    
+    //my custome Zooming logic
+    func perfurmZoomInForStartingImageView(startingImageView: UIImageView){
+        startingFrame = startingImageView.superview?.convert(startingImageView.frame, to: nil)
+        
+        let zoomingImageView = UIImageView(frame: startingFrame!)
+        zoomingImageView.image = startingImageView.image
+        zoomingImageView.isUserInteractionEnabled = true
+        zoomingImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleZoomOut)))
+        
+        //to add a new window
+        if let keyWindow = UIApplication.shared.keyWindow {
+            blackBackgroundView = UIView(frame: keyWindow.frame)
+            blackBackgroundView?.backgroundColor = UIColor.black
+            blackBackgroundView?.alpha = 0
+            keyWindow.addSubview(blackBackgroundView!)
+            
+            keyWindow.addSubview(zoomingImageView)
+            
+            //this type of animation is snapy and feels fast
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.blackBackgroundView?.alpha = 1
+                self.inputContainerView.alpha = 0
+                
+                //**MATH**
+                //  h2/w2 = h1/w1
+                //  h2 = h1 / w1 * w2
+                let height = self.startingFrame!.height / self.startingFrame!.width * keyWindow.frame.width
+                
+                zoomingImageView.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.width, height: height)
+                zoomingImageView.center = keyWindow.center
+                
+                }, completion: nil)
+        
+        }
+    }
+    
+    
+    
+    func handleZoomOut(tapGesture: UITapGestureRecognizer){
+        if let zoomOutImageView = tapGesture.view {
+            //need to animate back out to controller
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: { 
+                zoomOutImageView.frame = self.startingFrame!
+                self.blackBackgroundView?.alpha = 0
+                }, completion: { (completed: Bool) in
+                    zoomOutImageView.removeFromSuperview()
+            })
+            
+        }
+        
+    
     }
 }
