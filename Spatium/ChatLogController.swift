@@ -9,6 +9,8 @@
 import UIKit
 import Firebase
 import FirebaseDatabase
+import MobileCoreServices
+import AVFoundation
 
 private let reuseIdentifier = "Cell"
 
@@ -173,36 +175,58 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     func handleUploadTap(){
         let picker = UIImagePickerController()
         picker.delegate = self      //add 2 more libraries
-        
-        //to let the user to be able to EDIT the Image
         picker.allowsEditing = true
+        // add media type to include videos in the picker
+        picker.mediaTypes = [kUTTypeImage as String, kUTTypeMovie as String]
+        
         present(picker, animated: true, completion: nil)
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        if let videoUrl = info[UIImagePickerControllerMediaURL] as? URL{
+            //we selected a video
+            handleVideoSelectedForUrl(url: videoUrl)
+        } else {
+            //we selected an image
+            handleImageSelectedForInfoDictionary(info: info)
+        }
+        dismiss(animated: true, completion: nil)
+    }
+    
+    //handle the upload of a vided
+    private func handleVideoSelectedForUrl (url : URL) {
+        let filename = "SomeFileName.mov"
+        FIRStorage.storage().reference().child(filename).putFile(url , metadata: nil, completion:
+            { (metadata, error) in
+                if error != nil {
+                    print("Field to upload the video: ", error)
+                    return
+                }
+                if let storageUrl = metadata?.downloadURL()?.absoluteString {
+                    print (storageUrl)
+                }
+        })
+    
+    
+    }
+
+    //handle the uploade of an image
+    private func handleImageSelectedForInfoDictionary(info: [String: AnyObject]) {
         var selectedImageFromPicker: UIImage?
-        
         
         //if edited
         if let editedImage = info["UIImagePickerControllerEditedImage"] as? UIImage {
             selectedImageFromPicker = editedImage
-            
-        }
-            //if not edited
-        else if let originalImage = info["UIImagePickerControllerOriginalImage"] as? UIImage {
-            
+        } else if let originalImage = info["UIImagePickerControllerOriginalImage"] as? UIImage {
+            // if not edited
             selectedImageFromPicker = originalImage
-            
         }
         
         if let selectedImage = selectedImageFromPicker{
-                uploadToFirebaseStorageUsingImage(image: selectedImage)
+            uploadToFirebaseStorageUsingImage(image: selectedImage)
         }
         
-        dismiss(animated: true, completion: nil)
 
-        
     }
     
     private func uploadToFirebaseStorageUsingImage(image: UIImage){
@@ -298,7 +322,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         UIView.animate(withDuration: keyboardDuration!) {
             self.view.layoutIfNeeded()
 
-    }
+        }
     }
     
     ////////////////////////////////////////////////////
@@ -485,10 +509,15 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     
     var startingFrame: CGRect?
     var blackBackgroundView: UIView?
+    var startingImageView: UIImageView?
     
     
     //my custome Zooming logic
     func perfurmZoomInForStartingImageView(startingImageView: UIImageView){
+        
+        self.startingImageView = startingImageView
+        self.startingImageView?.isHidden = true
+        
         startingFrame = startingImageView.superview?.convert(startingImageView.frame, to: nil)
         
         let zoomingImageView = UIImageView(frame: startingFrame!)
@@ -528,11 +557,17 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     func handleZoomOut(tapGesture: UITapGestureRecognizer){
         if let zoomOutImageView = tapGesture.view {
             //need to animate back out to controller
-            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: { 
+            zoomOutImageView.layer.cornerRadius = 16
+            zoomOutImageView.clipsToBounds = true
+            
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                
                 zoomOutImageView.frame = self.startingFrame!
                 self.blackBackgroundView?.alpha = 0
+                self.inputContainerView.alpha = 1
                 }, completion: { (completed: Bool) in
                     zoomOutImageView.removeFromSuperview()
+                    self.startingImageView?.isHidden = false
             })
             
         }
