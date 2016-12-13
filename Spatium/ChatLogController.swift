@@ -195,8 +195,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     
     //handle the upload of a vided
     private func handleVideoSelectedForUrl (url : URL) {
-        let filename = "SomeFileName.mov"
-        let uploadTask = FIRStorage.storage().reference().child(filename).putFile(url , metadata: nil, completion:
+        let filename = NSUUID().uuidString + ".mov"
+        let uploadTask = FIRStorage.storage().reference().child("Message_Movies").child(filename).putFile(url , metadata: nil, completion:
             { (metadata, error) in
                 if error != nil {
                     print("Field to upload the video: ", error)
