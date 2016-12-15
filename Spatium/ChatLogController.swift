@@ -210,7 +210,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                     if let thumbnailImage = self.thumbnailImageForFileUrl(fileUrl: url) {
                         
                        self.uploadToFirebaseStorageUsingImage(image: thumbnailImage, completion: { (imageUrl) in
-                        let properties : [String: AnyObject] = ["imageUrl" : imageUrl as AnyObject, "imageWidth": thumbnailImage.size.width as AnyObject,"imageHeight": thumbnailImage.size.height as AnyObject]
+                        let properties : [String: AnyObject] = ["imageUrl" : imageUrl as AnyObject, "imageWidth": thumbnailImage.size.width as AnyObject,"imageHeight": thumbnailImage.size.height as AnyObject , "videoUrl": videoUrl as AnyObject]
                         self.sendMessageWithProperties(properties: properties)
                         
                        })
@@ -372,6 +372,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         cell.chatLogController = self
         
         let message = messages[indexPath.item]
+        cell.message = message 
         cell.textView.text = message.text
         
         //call the private function to modify the cell and the bubble
@@ -386,10 +387,10 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             cell.bubbleWidthAnchor?.constant = 200
             cell.textView.isHidden = true
 
-//            cell.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleImageTapping)))
         }
-
         
+        cell.playButton.isHidden = message.videoUrl == nil          //(this shorter for) if message.videoUrl != nil { cell.playButton.isHidden = false } else { cell.playButton.isHidden = true }
+    
         return cell
     }
     
