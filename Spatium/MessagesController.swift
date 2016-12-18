@@ -28,7 +28,40 @@ class MessagesController: UITableViewController {
         
         self.tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
         
+        //step 1 to be able to make deleting by swipe
+        self.tableView.allowsMultipleSelectionDuringEditing = true
+        
     }
+    
+    
+    //step 2 to be able to make deleting by swipe
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    //step 3 to be able to make deleting by swipe
+    //Here is what the deletion exactly do
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        guard let uid = FIRAuth.auth()?.currentUser?.uid else {
+            return
+        }
+        let message = self.messages[indexPath.row]
+        let chatPartnerId = message.chatPartnerId()
+        FIRDatabase.database().reference().child("User-Messages").child(uid).child(chatPartnerId).removeValue { (error, ref) in
+            
+            if error != nil {
+                print ("Failed to delete the message", error)
+                return
+            }
+            
+            self.messagesDictionary.removeValue(forKey: chatPartnerId)
+            self.attemptReloadOfTable()
+            
+            //this is one way of updating the table but its actually not SAFE
+            ///self.messages.remove(at: indexPath.row)
+            ///self.tableView.deleteRows(at: [indexPath], with: .automatic)
+        }
+            }
     
     //An Array of type message that will keep a Number of the messages sent to the user
     var messages = [Message]()
@@ -57,6 +90,15 @@ class MessagesController: UITableViewController {
                 
                 }, withCancel: nil)
             return
+            }, withCancel: nil)
+        
+        ref.observe(.childRemoved, with: { (snapshot) in
+            print(snapshot.key)
+            print(self.messagesDictionary)
+            self.messagesDictionary.removeValue(forKey: snapshot.key)
+            self.attemptReloadOfTable()
+            
+            
             }, withCancel: nil)
     }
     
