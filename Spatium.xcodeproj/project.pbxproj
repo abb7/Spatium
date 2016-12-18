@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		304F42E81E069B86007B7FCD /* ChatInputContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304F42E71E069B86007B7FCD /* ChatInputContainerView.swift */; };
 		309153141DEACED40020F483 /* ChatMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309153131DEACED20020F483 /* ChatMessageCell.swift */; };
 		30D956A81DD1C07E000B3DC4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D956A71DD1C07E000B3DC4 /* AppDelegate.swift */; };
 		30D956AA1DD1C07E000B3DC4 /* MessagesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D956A91DD1C07E000B3DC4 /* MessagesController.swift */; };
@@ -45,6 +46,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		304F42E71E069B86007B7FCD /* ChatInputContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatInputContainerView.swift; sourceTree = "<group>"; };
 		309153131DEACED20020F483 /* ChatMessageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatMessageCell.swift; sourceTree = "<group>"; };
 		30D956A41DD1C07E000B3DC4 /* Spatium.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Spatium.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30D956A71DD1C07E000B3DC4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -182,6 +184,7 @@
 			children = (
 				30D956E21DD1F298000B3DC4 /* UserCell.swift */,
 				309153131DEACED20020F483 /* ChatMessageCell.swift */,
+				304F42E71E069B86007B7FCD /* ChatInputContainerView.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -398,6 +401,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				30D956E71DD1F373000B3DC4 /* LoginController+Handlers.swift in Sources */,
+				304F42E81E069B86007B7FCD /* ChatInputContainerView.swift in Sources */,
 				30D956E51DD1F30A000B3DC4 /* NewMessageController.swift in Sources */,
 				30D956DB1DD1F1AA000B3DC4 /* ChatLogController.swift in Sources */,
 				30D956EA1DD1F9A0000B3DC4 /* Extentensions.swift in Sources */,

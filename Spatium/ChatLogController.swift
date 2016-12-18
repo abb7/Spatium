@@ -82,16 +82,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         
     }
     
-    ////////////////////////////////////////
-    //set up the textfield
-    lazy var inputTextField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "New Message"
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.delegate = self   //to help using Enter button to send
-        
-        return textField
-    }()
+    
     
     let cellId = "cellId"
     
@@ -115,61 +106,11 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     ////////////////////////////////////////
     //to set up the inputContainerView for the text to be sent and to include it inside the inputAccessoryView
     //inputTextField would be outside it to be able to type on it
-    lazy var inputContainerView : UIView  = {
-        let containerView = UIView ()
-        containerView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 50)
-        containerView.backgroundColor = UIColor.white
-        
-        //set up the send button
-        let sendButton = UIButton(type: .system)
-        sendButton.setTitle("Send", for: .normal)
-        sendButton.addTarget(self, action: #selector(handleSend), for: .touchUpInside)
-        sendButton.translatesAutoresizingMaskIntoConstraints = false
-        containerView.addSubview(sendButton)
-        
-        //x,y,h,w
-        sendButton.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
-        sendButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
-        sendButton.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
-        sendButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        
-        //set up the image to upload an image
-        let uploadImageView = UIImageView()
-        uploadImageView.image = UIImage(named: "upload-image")
-        containerView.addSubview(uploadImageView)
-        //uploadImageView.contentMode = .scaleAspectFit
-        uploadImageView.translatesAutoresizingMaskIntoConstraints = false
-        
-        uploadImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(ChatLogController.handleUploadTap)))
-        uploadImageView.isUserInteractionEnabled = true
-        
-        //x,y,h,w
-        uploadImageView.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
-        uploadImageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
-        uploadImageView.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        uploadImageView.widthAnchor.constraint(equalToConstant: 44).isActive = true
+    lazy var inputContainerView : ChatInputContainerView  = {
+        let chatInputContainerView = ChatInputContainerView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 50))
+        chatInputContainerView.chatLogController = self
+        return chatInputContainerView
 
-        
-        containerView.addSubview(self.inputTextField)
-        
-        //x,y,h,w
-        self.inputTextField.leftAnchor.constraint(equalTo: uploadImageView.rightAnchor).isActive = true
-        self.inputTextField.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
-        self.inputTextField.rightAnchor.constraint(equalTo: sendButton.leftAnchor).isActive = true
-        self.inputTextField.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
-        
-        let separatorLineView = UIView()
-        separatorLineView.backgroundColor = UIColor(r: 220, g: 220, b: 220)
-        separatorLineView.translatesAutoresizingMaskIntoConstraints = false
-        containerView.addSubview(separatorLineView)
-        
-        //x,y,h,w
-        separatorLineView.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
-        separatorLineView.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
-        separatorLineView.widthAnchor.constraint(equalTo: containerView.widthAnchor).isActive = true
-        separatorLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
-
-        return containerView
     }()
     
     func handleUploadTap(){
@@ -180,6 +121,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         picker.mediaTypes = [kUTTypeImage as String, kUTTypeMovie as String]
         
         present(picker, animated: true, completion: nil)
+
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
@@ -490,7 +432,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     //to update the "messages" node in the Database and add the new message and user name
     func handleSend(){
         
-        let properties : [String: AnyObject] = ["text": inputTextField.text! as AnyObject]
+        let properties : [String: AnyObject] = ["text": inputContainerView.inputTextField.text! as AnyObject]
         sendMessageWithProperties(properties: properties)
         
     }
@@ -521,7 +463,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 return
             }
             
-            self.inputTextField.text = nil
+            self.inputContainerView.inputTextField.text = nil
             
             let userMessagesRef = FIRDatabase.database().reference().child("User-Messages").child(fromId).child(toId)
             let messageId = childRef.key
@@ -534,12 +476,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
 
     }
     
-    ////////////////////////////////////////
-    //this optional method would call senButton whenever the Enter button is pressed
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        handleSend()
-        return true
-    }
+    
     
     var startingFrame: CGRect?
     var blackBackgroundView: UIView?
